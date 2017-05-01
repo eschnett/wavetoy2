@@ -30,8 +30,23 @@ main = do
 
 spec :: Spec
 spec = parallel $ do
+  specL2Norm
   specCell
   specGrid
+
+specL2Norm :: Spec
+specL2Norm = parallel $
+  do describe "L2Norm" $
+       do it "is zero when empty" $ property $
+            let n = mempty :: L2Norm Double
+            in getL2Norm n == 0
+          it "is the absolute value for a single value" $ property $
+            \x -> let n = makeL2Norm x :: L2Norm Double
+                  in getL2Norm n == abs x
+          it "is convex" $ property $
+            \xs -> let n = foldMap makeL2Norm xs :: L2Norm Double
+                       r = sqrt (fromIntegral (length xs)) * getL2Norm n
+                   in all (\x -> r >= abs x) (xs :: [Double])
 
 specCell :: Spec
 specCell = parallel $

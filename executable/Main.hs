@@ -46,7 +46,7 @@ main =
                                 return (iter', state')
         rhs s = rhsGrid (bcGrid s) s
 
-output :: (Floating a, Show a) => (Int, Grid a (Cell a)) -> IO ()
+output :: (Eq a, Floating a, Show a) => (Int, Grid a (Cell a)) -> IO ()
 output (iter, state) =
   do guard $ not (iter == niters || iter `mod` out_every == 0)
      putStrLn $ "iteration: " ++ show iter

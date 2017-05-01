@@ -27,12 +27,13 @@ default (Int)
 
 -- |An L2Norm holds the state for calculating an L2 norm
 data L2Norm a = L2Norm a a
+  deriving (Eq, Ord, Read, Show)
 
 makeL2Norm :: Num a => a -> L2Norm a
 makeL2Norm x = L2Norm 1 (x^2)
 
-getL2Norm :: Floating a => L2Norm a -> a
-getL2Norm (L2Norm cnt ssq) = sqrt (ssq / cnt)
+getL2Norm :: (Eq a, Floating a) => L2Norm a -> a
+getL2Norm (L2Norm cnt ssq) = if cnt == 0 then 0 else sqrt (ssq / cnt)
 
 instance Num a => Monoid (L2Norm a) where
   mempty = L2Norm 0 0
@@ -122,7 +123,7 @@ integralGrid g = getSum (foldMap Sum g) * dx
         (xmin, xmax) = bnds g
         np = V.length (cells g)
 
-normGrid :: (Floating a, Foldable c) => Grid a (c a) -> a
+normGrid :: (Eq a, Floating a, Foldable c) => Grid a (c a) -> a
 normGrid g = getL2Norm $ foldMap (foldMap makeL2Norm) g
 
 skeletonGrid :: Num a => (a, a) -> Int -> Grid a ()
