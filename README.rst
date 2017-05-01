@@ -1,11 +1,10 @@
-`wavetoy1 <https://github.com/eschnett/wavetoy1>`__
+`wavetoy2 <https://github.com/eschnett/wavetoy2>`__
 ===================================================
 
 |Build Status| |Coverage Status|
 
-A progression of WaveToy implementations in Haskell. This is step 1, a
-straightforward implementation serving mostly as basis for further
-improvements.
+A progression of WaveToy implementations in Haskell. This is step 2,
+introducing more abstract concepts such as Monoid or VectorSpace.
 
 .. code:: sh
 
@@ -21,7 +20,7 @@ improvements.
     # Generate documentation.
     stack haddock
 
-.. |Build Status| image:: https://travis-ci.org/eschnett/wavetoy1.svg?branch=master
-   :target: https://travis-ci.org/eschnett/wavetoy1
-.. |Coverage Status| image:: https://coveralls.io/repos/github/eschnett/wavetoy1/badge.svg
-   :target: https://coveralls.io/github/eschnett/wavetoy1
+.. |Build Status| image:: https://travis-ci.org/eschnett/wavetoy2.svg?branch=master
+   :target: https://travis-ci.org/eschnett/wavetoy2
+.. |Coverage Status| image:: https://coveralls.io/repos/github/eschnett/wavetoy2/badge.svg
+   :target: https://coveralls.io/github/eschnett/wavetoy2

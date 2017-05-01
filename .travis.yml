@@ -38,4 +38,4 @@ after_script:
 # Collect and submit coverage information
 # - stack install stack-hpc-coveralls
 - travis_retry curl -L https://github.com/rubik/stack-hpc-coveralls/releases/download/v0.0.4.0/shc-linux-x64-8.0.1.tar.bz2 | tar -xj
-- ./shc wavetoy1 wavetoy1-test-suite
+- ./shc wavetoy2 wavetoy2-test-suite

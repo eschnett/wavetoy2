@@ -2,10 +2,10 @@
 # generate a Cabal file when you run `stack build`. See the hpack
 # website for help with this file: <https://github.com/sol/hpack>.
 benchmarks:
-  wavetoy1-benchmarks:
+  wavetoy2-benchmarks:
     dependencies:
     - base
-    - wavetoy1
+    - wavetoy2
     - criterion
     ghc-options:
     - -rtsopts
@@ -14,13 +14,14 @@ benchmarks:
     main: Main.hs
     source-dirs: benchmark
 category: Other
-description: wavetoy1 is a Haskell WaveToy implementation
+description: wavetoy2 is a Haskell WaveToy implementation
 executables:
-  wavetoy1:
+  wavetoy2:
     dependencies:
     - base
     - monad-loops
-    - wavetoy1
+    - vector-space
+    - wavetoy2
     ghc-options:
     - -rtsopts
     - -threaded
@@ -34,29 +35,32 @@ extra-source-files:
 - README.rst
 - stack.yaml
 ghc-options: -Wall
-github: eschnett/wavetoy1
+github: eschnett/wavetoy2
 library:
   dependencies:
   - base
   - vector
+  - vector-space
   source-dirs: library
 license: MIT
 maintainer: Erik Schnetter
-name: wavetoy1
-synopsis: wavetoy1 is a Haskell WaveToy implementation
+name: wavetoy2
+synopsis: wavetoy2 is a Haskell WaveToy implementation
 tests:
-  wavetoy1-test-suite:
+  wavetoy2-test-suite:
     dependencies:
     - base
-    - wavetoy1
+    - ieee754
     - tasty
     - tasty-hspec
     - tasty-quickcheck
     - tasty-smallcheck
+    - vector
+    - wavetoy2
     ghc-options:
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
     main: Main.hs
     source-dirs: test-suite
-version: '0.0.0'
+version: '1.0.0'

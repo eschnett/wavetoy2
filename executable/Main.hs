@@ -1,44 +1,57 @@
-{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+{-# OPTIONS_GHC -fno-warn-unused-matches #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
 
+import Control.Monad
 import Control.Monad.Loops
 
-import WaveToy1
+import WaveToy2
 
 -- Parameters
-tini = 0::Double
-xmin = 0::Double
-xmax = 1::Double
-np = 20::Int
-dx = (xmax - xmin) / fromIntegral np :: Double
-alpha = 1/2 :: Double
-dt = alpha * dx :: Double
-niters = round (fromIntegral np / alpha) :: Int
-out_every = niters `div` 10 :: Int
+tini :: Double
+tini = 0
+xmin :: Double
+xmin = 0
+xmax :: Double
+xmax = 1
+np :: Int
+np = 20
+dx :: Double
+dx = (xmax - xmin) / fromIntegral np
+alpha :: Double
+alpha = 1/2
+dt :: Double
+dt = alpha * dx
+niters :: Int
+niters = round (fromIntegral np / alpha)
+out_every :: Int
+out_every = niters `div` 10
 
-rhs s = rhsGrid (bcGrid s) s
-inc g = g { iter = iter g + 1 }
-step s = inc $ rk2Grid dt rhs s
+iterateWhileM_ :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m ()
+iterateWhileM_ predicate action state =
+  do _ <- iterateUntilM (not . predicate) action state
+     return ()
 
 main :: IO ()
-main = do putStrLn "WaveToy1"
-          let state = initGrid tini (xmin, xmax) np
-          output state
-          _ <- iterateUntilM
-            (\s -> iter s >= niters)
-            (\s -> do let s' = step s
-                      output s'
-                      return s')
-            state
-          return ()
+main =
+  do putStrLn "WaveToy1"
+     let skel = skeletonGrid (xmin, xmax) np
+     let iter = 0
+     let state = initGrid tini skel
+     output (iter, state)
+     iterateWhileM_ cond step (iter, state)
+  where cond (iter, state) = iter < niters
+        step (iter, state) = do let iter' = iter + 1
+                                let state' = rk2Grid dt rhs state
+                                output (iter', state')
+                                return (iter', state')
+        rhs s = rhsGrid (bcGrid s) s
 
-output :: (Floating a, Show a) => Grid a (Cell a) -> IO ()
-output state =
-  if iter state == niters || iter state `mod` out_every == 0
-  then do putStrLn $ "iteration: " ++ show (iter state)
-          putStrLn $ "  time: " ++ show (time state)
-          let energy = integralGrid $ energyGrid state
-          putStrLn $ "  energy: " ++ show energy
-          let error = normGrid $ errorGrid state
-          putStrLn $ "  L2 error: " ++ show error
-  else do return ()
+output :: (Floating a, Show a) => (Int, Grid a (Cell a)) -> IO ()
+output (iter, state) =
+  do guard $ not (iter == niters || iter `mod` out_every == 0)
+     putStrLn $ "iteration: " ++ show iter
+     putStrLn $ "  time: " ++ show (time state)
+     let energy = integralGrid $ energyGrid state
+     putStrLn $ "  energy: " ++ show energy
+     let error = normGrid $ errorGrid state
+     putStrLn $ "  L2 error: " ++ show error
