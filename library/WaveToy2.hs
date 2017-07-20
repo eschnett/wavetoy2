@@ -226,13 +226,13 @@ energyGrid :: Fractional a => Grid a (Cell a) -> Grid a a
 energyGrid g = fmap energyCell g
 
 derivGrid ::
-       (VectorSpace (c a), Fractional (Scalar (c a)), RealFrac b)
+       (VectorSpace (c a), Floating (Scalar (c a)), RealFrac b)
     => Grid b (c a)
     -> Grid b (c a)
 derivGrid g = extend (derivative 0) g
 
 rhsGrid ::
-       (VectorSpace a, Fractional (Scalar a), RealFrac b)
+       (VectorSpace a, Floating (Scalar a), RealFrac b)
     => Grid b (Cell a)
     -> Grid b (Cell a)
 rhsGrid g = rhsCell <$> g <*> derivGrid g

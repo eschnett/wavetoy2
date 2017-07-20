@@ -37,4 +37,4 @@ class (MetricSpace m, Comonad m) =>
 
 class Manifold m =>
       DifferentiableManifold m where
-    derivative :: (VectorSpace a, Fractional (Scalar a)) => Int -> m a -> a
+    derivative :: (VectorSpace a, Floating (Scalar a)) => Int -> m a -> a
