@@ -4,7 +4,18 @@
 |Build Status| |Coverage Status|
 
 A progression of WaveToy implementations in Haskell. This is step 2,
-introducing more abstract concepts such as Monoid or VectorSpace.
+introducing more abstract concepts such as Monoid, VectorSpace, or
+Manifold.
+
+Problem description
+-------------------
+
+.. math::
+
+   \partial_{tt} u = \partial_{xx} u
+
+Build instructions
+------------------
 
 .. code:: sh
 

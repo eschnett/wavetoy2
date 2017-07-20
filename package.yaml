@@ -8,6 +8,7 @@ benchmarks:
     - wavetoy2
     - criterion
     ghc-options:
+    - -O2
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
@@ -23,6 +24,7 @@ executables:
     - vector-space
     - wavetoy2
     ghc-options:
+    - -O2
     - -rtsopts
     - -threaded
     - -with-rtsopts=-N
@@ -39,6 +41,7 @@ github: eschnett/wavetoy2
 library:
   dependencies:
   - base
+  - comonad
   - vector
   - vector-space
   source-dirs: library
