@@ -4,14 +4,14 @@
 benchmarks:
   wavetoy2-benchmarks:
     dependencies:
-    - base
-    - wavetoy2
-    - criterion
+      - base
+      - wavetoy2
+      - criterion
     ghc-options:
-    - -O2
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+      - -O2
+      - -rtsopts
+      - -threaded
+      - -with-rtsopts=-N
     main: Main.hs
     source-dirs: benchmark
 category: Other
@@ -19,31 +19,33 @@ description: wavetoy2 is a Haskell WaveToy implementation
 executables:
   wavetoy2:
     dependencies:
-    - base
-    - monad-loops
-    - vector-space
-    - wavetoy2
+      - base
+      - monad-loops
+      - vector-space
+      - wavetoy2
     ghc-options:
-    - -O2
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+      - -O2
+      - -rtsopts
+      - -threaded
+      - -with-rtsopts=-N
     main: Main.hs
     source-dirs: executable
 extra-source-files:
-- CHANGELOG.rst
-- LICENSE.rst
-- package.yaml
-- README.rst
-- stack.yaml
-ghc-options: -Wall
+  - CHANGELOG.rst
+  - LICENSE.rst
+  - package.yaml
+  - README.rst
+  - stack.yaml
+ghc-options:
+  - -Wall
+  - -Wno-type-defaults
 github: eschnett/wavetoy2
 library:
   dependencies:
-  - base
-  - comonad
-  - vector
-  - vector-space
+    - base
+    - comonad
+    - vector
+    - vector-space
   source-dirs: library
 license: MIT
 maintainer: Erik Schnetter
@@ -52,18 +54,18 @@ synopsis: wavetoy2 is a Haskell WaveToy implementation
 tests:
   wavetoy2-test-suite:
     dependencies:
-    - base
-    - ieee754
-    - tasty
-    - tasty-hspec
-    - tasty-quickcheck
-    - tasty-smallcheck
-    - vector
-    - wavetoy2
+      - base
+      - ieee754
+      - tasty
+      - tasty-hspec
+      - tasty-quickcheck
+      - tasty-smallcheck
+      - vector
+      - wavetoy2
     ghc-options:
-    - -rtsopts
-    - -threaded
-    - -with-rtsopts=-N
+      - -rtsopts
+      - -threaded
+      - -with-rtsopts=-N
     main: Main.hs
     source-dirs: test-suite
 version: '1.0.0'
