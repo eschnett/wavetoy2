@@ -166,7 +166,8 @@ instance MetricSpace (Grid b) where
             | i == 0 || i == np - 1 = 0 *^ x
         dens i x
             | i == 1 || i == np - 2 = (1 / 2) *^ x
-        dens i x = x
+        dens i x
+            | otherwise = x
         np = npGrid g
 
 instance Manifold (Grid b) where
@@ -179,7 +180,8 @@ instance RealFrac b => DifferentiableManifold (Grid b) where
             | i == 0 = xs ! 1 ^-^ xs ! 0
         deriv i
             | i == np - 1 = xs ! i ^-^ xs ! (i - 1)
-        deriv i = (1 / 2) *^ (xs ! (i + 1) ^-^ xs ! (i - 1))
+        deriv i
+            | otherwise = (1 / 2) *^ (xs ! (i + 1) ^-^ xs ! (i - 1))
         xs = cells g
         np = npGrid g
         dx = dxGrid g
@@ -243,7 +245,8 @@ bcGrid g = extend bc g
         | i == 0 = bcCell (cs ! 2)
     bc' i
         | i == np - 1 = bcCell (cs ! (np - 3))
-    bc' i = cs ! i
+    bc' i
+        | otherwise = cs ! i
     cs = cells g
     np = npGrid g
 
