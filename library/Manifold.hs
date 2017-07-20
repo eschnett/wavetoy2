@@ -1,29 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
 
-{-
-
-Haskell's number system:
-
-Eq => Num (+, -, *)
-
-Num => Integral (div, mod)
-Num => Fractional (/)
-
-Fractional => Floating (sqrt)
-
-Ord, Num => Real
-Real, Fractional => Realfrac
-Real, Floating => Realfloat
-
-Realfrac => Rational
-
-Integral: Int, Integer
-Realfloat: Float, Double
-Floating: Complex
-Rational: Ratio
-
--}
 module Manifold
     ( MetricSpace(..)
     , integral
