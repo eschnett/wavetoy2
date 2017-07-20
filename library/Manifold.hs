@@ -13,8 +13,8 @@ import Data.VectorSpace
 
 class Functor m =>
       MetricSpace m where
-    densitize :: VectorSpace a => m a -> m a
-    volumeForm :: (Num b, VectorSpace b) => m a -> m b
+    densitize :: (VectorSpace a, Fractional (Scalar a)) => m a -> m a
+    volumeForm :: (Num b, VectorSpace b, Fractional (Scalar b)) => m a -> m b
     volumeForm m = densitize (1 <$ m)
     -- Expected:
     --     instance (MetricSpace m, Applicative m, AdditiveGroup a) =>
@@ -22,7 +22,10 @@ class Functor m =>
     --     instance (MetricSpace m, Functor m, VectorSpace a) =>
     --         VectorSpace (m a)
 
-integral :: (MetricSpace m, Foldable m, VectorSpace a) => m a -> a
+integral ::
+       (MetricSpace m, Foldable m, VectorSpace a, Fractional (Scalar a))
+    => m a
+    -> a
 integral m = getSum $ foldMap Sum (densitize m)
 
 class (MetricSpace m, Comonad m) =>

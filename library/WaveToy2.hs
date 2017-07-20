@@ -160,7 +160,14 @@ instance VectorSpace a => VectorSpace (Grid b a) where
     a *^ g = fmap (a *^) g
 
 instance MetricSpace (Grid b) where
-    densitize g = g
+    densitize g = g {cells = V.imap dens (cells g)}
+      where
+        dens i x
+            | i == 0 || i == np - 1 = 0 *^ x
+        dens i x
+            | i == 1 || i == np - 2 = (1 / 2) *^ x
+        dens i x = x
+        np = npGrid g
 
 instance Manifold (Grid b) where
     dimension g = 1
@@ -177,19 +184,9 @@ instance RealFrac b => DifferentiableManifold (Grid b) where
         np = npGrid g
         dx = dxGrid g
 
-densitizeGrid :: (VectorSpace a, Fractional (Scalar a)) => Grid b a -> Grid b a
-densitizeGrid g = g {cells = V.imap dens (cells g)}
-  where
-    dens i x
-        | i == 0 || i == np - 1 = 0 *^ x
-    dens i x
-        | i == 1 || i == np - 2 = (1 / 2) *^ x
-    dens i x = x
-    np = npGrid g
-
 integralGrid ::
        (VectorSpace a, Fractional (Scalar a), RealFrac b) => Grid b a -> a
-integralGrid g = realToFrac (dxGrid g) *^ sumV (densitizeGrid g)
+integralGrid g = realToFrac (dxGrid g) *^ sumV (densitize g)
 
 normGrid ::
        ( Foldable c
