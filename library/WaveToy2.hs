@@ -188,7 +188,7 @@ instance RealFrac b => DifferentiableManifold (Grid b) where
 
 integralGrid ::
        (VectorSpace a, Fractional (Scalar a), RealFrac b) => Grid b a -> a
-integralGrid g = realToFrac (dxGrid g) *^ sumV (densitize g)
+integralGrid g = realToFrac (dxGrid g) *^ integral g
 
 normGrid ::
        ( Foldable c
