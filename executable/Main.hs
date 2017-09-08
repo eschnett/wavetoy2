@@ -6,6 +6,7 @@ import Control.Monad
 import Control.Monad.Loops
 import Data.VectorSpace
 
+import Cell
 import WaveToy2
 
 -- Parameters
@@ -44,29 +45,30 @@ iterateWhileM_ predicate action state = do
 main :: IO ()
 main = do
     putStrLn "WaveToy2"
-    let skel = skeletonGrid (xmin, xmax) (ncells + 3)
+    let skel = skeletonState (xmin, xmax) (ncells + 3)
     let iter = 0
-    let state = initGrid tini skel
+    let state = initState tini skel
     output (iter, state)
     iterateWhileM_ cond step (iter, state)
   where
     cond (iter, state) = iter < niters
     step (iter, state) = do
         let iter' = iter + 1
-        let state' = rk2Grid dt rhs state
+        let state' = rk2State dt rhsState state
         output (iter', state')
         return (iter', state')
-    rhs s = bcGrid (rhsGrid s)
 
-output ::
-       (VectorSpace a, Fractional (Scalar a), RealFloat a, Show a)
-    => (Int, Grid a (Cell a))
-    -> IO ()
+output :: ( InnerSpace a
+          , RealFloat a
+          , Show a
+          , Floating (Scalar a)
+          , Show (Scalar a)) =>
+         (Int, State a (Cell a)) -> IO ()
 output (iter, state) = do
     when (iter == niters || iter `mod` out_every == 0) $ do
         putStrLn $ "iteration: " ++ show iter
         putStrLn $ "  time: " ++ show (time state)
-        let energy = integralGrid $ energyGrid state
+        let energy = integralState $ energyState state
         putStrLn $ "  energy: " ++ show energy
-        let error = normGrid $ errorGrid state
+        let error = normState (errorState state)
         putStrLn $ "  L2 error: " ++ show error

@@ -4,7 +4,7 @@
 |Build Status| |Coverage Status|
 
 A progression of WaveToy implementations in Haskell. This is step 2,
-introducing more abstract concepts such as Monoid, VectorSpace, or
+introducing more abstract concepts such as Monoid, VectorSpace, and
 Manifold.
 
 Problem description

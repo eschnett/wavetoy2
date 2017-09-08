@@ -38,12 +38,18 @@ extra-source-files:
   - stack.yaml
 ghc-options:
   - -Wall
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
   - -Wno-type-defaults
 github: eschnett/wavetoy2
 library:
   dependencies:
     - base
     - comonad
+    # - contravariant
+    # - data-default
+    # - ghc-typelits-knownnat
+    # - profunctors
     - vector
     - vector-space
   source-dirs: library
@@ -68,4 +74,4 @@ tests:
       - -with-rtsopts=-N
     main: Main.hs
     source-dirs: test-suite
-version: '1.0.0'
+version: '2.0.0.0'
