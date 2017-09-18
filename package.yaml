@@ -5,8 +5,8 @@ benchmarks:
   wavetoy2-benchmarks:
     dependencies:
       - base
-      - wavetoy2
       - criterion
+      - wavetoy2
     ghc-options:
       - -O2
       - -rtsopts
@@ -49,7 +49,9 @@ library:
     # - contravariant
     # - data-default
     # - ghc-typelits-knownnat
+    - ieee754
     # - profunctors
+    - QuickCheck
     - vector
     - vector-space
   source-dirs: library
@@ -61,12 +63,13 @@ tests:
   wavetoy2-test-suite:
     dependencies:
       - base
-      - ieee754
+      - comonad
       - tasty
       - tasty-hspec
       - tasty-quickcheck
       - tasty-smallcheck
-      - vector
+      # - vector
+      - vector-space
       - wavetoy2
     ghc-options:
       - -rtsopts
