@@ -6,6 +6,7 @@
 
 module WaveToy2 ( State(..)
                 , skeletonState
+                , coordState
                 , integralState
                 , normState
                 , initState
@@ -19,10 +20,10 @@ import Control.Applicative
 import Control.Comonad
 import Data.VectorSpace
 
-import Manifold
-import Field
-
 import Cell
+import Field
+import Manifold
+import SimpleVectors
 
 -- default (Int)
 
@@ -55,10 +56,11 @@ integralState :: (RealFrac b, VectorSpace a, Fractional (Scalar a)) =>
                  State b a -> a
 integralState g = integral (cells g)
 
-normState :: (Eq b, InnerSpace a, Floating (Scalar a)) => State b a -> Scalar a
+normState :: (RealFrac b, InnerSpace a, Floating (Scalar a)) =>
+             State b a -> Scalar a
 normState g = sqrt (cells g <.> cells g)
 
-skeletonState :: Num a => (a, a) -> Int -> State a ()
+skeletonState :: Num a => (a, a) -> Int -> State a (V0 a)
 skeletonState (lo, hi) np =
     State 0 (skeletonPiecewiseLinearField1D (Interval1 lo hi) np)
 

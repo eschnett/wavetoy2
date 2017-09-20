@@ -38,4 +38,4 @@ spec =
        describe "Manifold" ManifoldSpec.spec
        describe "Field" FieldSpec.spec
        describe "Cell" CellSpec.spec
-       -- describe "WaveToy2" WaveToy2Spec.spec
+       describe "WaveToy2" WaveToy2Spec.spec

@@ -13,8 +13,6 @@ import Manifold
 
 import IEEEUtils
 
-import Debug.Trace
-
 
 
 spec :: Spec
@@ -33,12 +31,12 @@ specPiecewiseLinearField1D = do
          (lo, hi) = bounds m ()
          u = coordinatePiecewiseLinearField1D m np
          proj x = lo + mod' x (hi - lo)
-         xs = if isEmpty m then []
-              else if isDiscrete m () then [lo]
-              else [lo, hi] ++ map proj xs'
-         val x = if np == 0 then 0
-                 else if np == 1 then lo
-                 else x
+         xs | isEmpty m = []
+            | isDiscrete m () = [lo]
+            | otherwise = [lo, hi] ++ map proj xs'
+         val x | np == 0 = 0
+               | np == 1 = lo
+               | otherwise = x
          scale = absmaximum [lo, hi]
      in all (\x -> approxEq scale (evaluate x u) (val x)) xs
   it "approximates the correct value when evaluated (non-linear)" $
@@ -56,9 +54,9 @@ specPiecewiseLinearField1D = do
      let np = abs np'
          (lo, hi) = bounds m ()
          u = coordinatePiecewiseLinearField1D m np
-         val = if isDiscrete m () || np == 0 then 0
-               else if np == 1 then lo * (hi - lo)
-               else 1/2 * (hi^2 - lo^2)
+         val | isDiscrete m () || np == 0 = 0
+             | np == 1 = lo * (hi - lo)
+             | otherwise = 1/2 * (hi^2 - lo^2)
          scale = absmaximum [lo^2, hi^2]
      in approxEq scale (integral u) val
   it "has the correct volume" $
@@ -78,11 +76,11 @@ specPiecewiseLinearField1D = do
          du = extend (derivative ()) u
          h = (hi - lo) / fromIntegral (np - 1)
          proj x = lo + mod' x (hi - lo)
-         xs = if isEmpty m then []
-              else if isDiscrete m () then [lo]
-              else [lo, hi] ++ map proj xs'
-         val = if isDiscrete m () || np <= 1 then 0
-               else 1
+         xs | isEmpty m = []
+            | isDiscrete m () = [lo]
+            | otherwise = [lo, hi] ++ map proj xs'
+         val | isDiscrete m () || np <= 1 = 0
+             | otherwise = 1
          scale = absmaximum [lo, hi, lo / h, hi / h]
      in all (\x -> approxEq scale (evaluate x du) val) xs
   it "has the correct boundary value" $
@@ -93,22 +91,21 @@ specPiecewiseLinearField1D = do
          bu = extend (boundary ()) u
          h = (hi - lo) / fromIntegral (np - 1)
          proj x = lo + mod' x (hi - lo)
-         xs = if isEmpty m then []
-              else if isDiscrete m () then [lo]
-              else [lo, hi] ++ map proj xs'
-         good x val =
-             if isDiscrete m () || np <= 1 then val == 0
-             else if approxEq scale x lo then approxEq scale val (-2*lo/h)
-             else if approxEq scale x hi then approxEq scale val (2*hi/h)
-             else if approxGt scale x (lo+h) && approxLt scale x (hi-h)
-                  then val == 0
-             else True
+         xs | isEmpty m = []
+            | isDiscrete m () = [lo]
+            | otherwise = [lo, hi] ++ map proj xs'
+         good x val
+             | isDiscrete m () || np <= 1 = val == 0
+             | approxEq scale x lo = approxEq scale val (-2*lo/h)
+             | approxEq scale x hi = approxEq scale val (2*hi/h)
+             | approxGt scale x (lo+h) && approxLt scale x (hi-h) = val == 0
+             | otherwise = True
          scale = absmaximum [lo, hi, lo / h, hi / h]
      in all (\x -> good x (evaluate x bu)) xs
   it "has the correct boundary value" $
      -- TODO: Does this fail randomly? maybe lo' and hi' are cutting
      -- it too close?
-     property $ \lo hi np (xs' :: [Double]) -> lo < hi && np >= 3 ==>
+     property $ \lo hi np (xs' :: [Double]) -> lo < hi && np > 3 ==>
      let m = Interval1 lo hi :: Interval1 Double
          u = coordinatePiecewiseLinearField1D m np
          bu = extend (boundary ()) u
@@ -120,7 +117,7 @@ specPiecewiseLinearField1D = do
         approxEq scale (evaluate hi bu) (2*hi/h) &&
         all (\x -> approxEq scale (evaluate x bu) 0) xs
   it "has the correct boundary normal" $
-     property $ \lo hi np (xs' :: [Double]) -> lo < hi && np >= 3 ==>
+     property $ \lo hi np (xs' :: [Double]) -> lo < hi && np > 3 ==>
      let m = Interval1 lo hi :: Interval1 Double
          u = coordinatePiecewiseLinearField1D m np
          bn = extend (boundaryNormal ()) u
@@ -144,8 +141,8 @@ specPiecewiseLinearField1D = do
          scale1 = absmaximum ([lo, hi] ++
                               values u ++ values du ++ values bu ++
                               values v ++ values dv ++ values bv)
-         scale = absmaximum $ [scale1, scale1 / (hi - lo),
-                               scale1^2, scale1^2 / (hi - lo)]
+         scale = absmaximum
+                 [scale1, scale1 / (hi - lo), scale1^2, scale1^2 / (hi - lo)]
      in approxEq scale (du <.> v + u <.> dv) (u <.> bv) &&
         approxEq scale (du <.> v + u <.> dv) (bu <.> v)
 
@@ -158,8 +155,8 @@ specFieldProduct = do
                  (f2 :: PiecewiseLinearField1D Double Double)
                  (xs' :: [Either Double Double]) ->
                  -- TOOD: Remove this restriction
-                 (uncurry (<)) (bounds (manifold_ f1) ()) &&
-                 (uncurry (<)) (bounds (manifold_ f2) ()) ==>
+                 uncurry (<) (bounds (manifold_ f1) ()) &&
+                 uncurry (<) (bounds (manifold_ f2) ()) ==>
      let f = fieldProduct f1 f2
          (lo1, hi1) = bounds (manifold_ f1) ()
          (lo2, hi2) = bounds (manifold_ f2) ()
@@ -258,8 +255,8 @@ specFieldCompose = do
                  (vs12 :: [(Double, [Double])])
                  (xs' :: [(Double, Double)]) ->
                  -- TOOD: Remove this restriction
-                 (uncurry (<)) (bounds m1 ()) &&
-                 (uncurry (<)) (bounds m2 ()) &&
+                 uncurry (<) (bounds m1 ()) &&
+                 uncurry (<) (bounds m2 ()) &&
                  length vs12 > 0 &&
                  all (\(_, v2s) -> length v2s > 0) vs12 ==>
      let f2s = [generatePiecewiseLinearField1D m2 vs2 | vs2 <- map snd vs12]

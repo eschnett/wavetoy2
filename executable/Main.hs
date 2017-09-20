@@ -34,8 +34,8 @@ dt = alpha * dx
 niters :: Int
 niters = round (fromIntegral ncells / alpha)
 
-out_every :: Int
-out_every = niters `div` 10
+outEvery :: Int
+outEvery = niters `div` 10
 
 iterateWhileM_ :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m ()
 iterateWhileM_ predicate action state = do
@@ -65,7 +65,7 @@ output :: ( InnerSpace a
           , Show (Scalar a)) =>
          (Int, State a (Cell a)) -> IO ()
 output (iter, state) = do
-    when (iter == niters || iter `mod` out_every == 0) $ do
+    when (iter == niters || iter `mod` outEvery == 0) $ do
         putStrLn $ "iteration: " ++ show iter
         putStrLn $ "  time: " ++ show (time state)
         let energy = integralState $ energyState state

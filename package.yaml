@@ -50,6 +50,7 @@ library:
     # - data-default
     # - ghc-typelits-knownnat
     - ieee754
+    - linear
     # - profunctors
     - QuickCheck
     - vector
