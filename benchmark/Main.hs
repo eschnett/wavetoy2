@@ -4,44 +4,43 @@
 -- See its website for help: <http://www.serpentine.com/criterion/>.
 import Criterion.Main
 
+import SimpleVectors
 import WaveToy2
 
-default (Int)
+
 
 main :: IO ()
-main =
-    defaultMain $
-    [ bgroup
-          "Grid"
-          [ bench "init" $
-            whnf
-                (\np ->
-                     let skel = skeletonGrid (0, 1) np :: Grid Double ()
-                         coords = coordGrid skel
-                         g = initGrid 0 coords
-                     in integralGrid $ energyGrid g)
-                gridSize
-          , bench "rhs" $
-            whnf
-                (\np ->
-                     let skel = skeletonGrid (0, 1) np :: Grid Double ()
-                         coords = coordGrid skel
-                         g = initGrid 0 coords
-                         r = bcGrid (rhsGrid g)
-                     in integralGrid $ energyGrid r)
-                gridSize
-          , bench "rk2" $
-            whnf
-                (\np ->
-                     let skel = skeletonGrid (0, 1) np :: Grid Double ()
-                         coords = coordGrid skel
-                         g = initGrid 0 coords
-                         rhs x = bcGrid (rhsGrid x)
-                         step = rk2Grid smallStep rhs
-                         g' = iterate step g !! numSteps
-                     in integralGrid $ energyGrid g')
-                gridSize
-          ]
+main = defaultMain
+    [ bgroup "State"
+      [ bench "init" $
+        whnf
+        (\np ->
+         let skel = skeletonState (0, 1) np :: State Double (V0 Double)
+             coords = coordState skel
+             g = initState 0 coords
+         in integralState $ energyState g)
+        gridSize
+      , bench "rhs" $
+        whnf
+        (\np ->
+         let skel = skeletonState (0, 1) np :: State Double (V0 Double)
+             coords = coordState skel
+             g = initState 0 coords
+             r = rhsState g
+         in integralState $ energyState r)
+        gridSize
+      , bench "rk2" $
+        whnf
+        (\np ->
+         let skel = skeletonState (0, 1) np :: State Double (V0 Double)
+             coords = coordState skel
+             g = initState 0 coords
+             rhs x = rhsState x
+             step = rk2State smallStep rhs
+             g' = iterate step g !! numSteps
+         in integralState $ energyState g')
+        gridSize
+      ]
     ]
 
 gridSize :: Int
