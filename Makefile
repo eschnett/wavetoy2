@@ -4,3 +4,8 @@ all:
 	stack test
 	stack bench
 	stack -j4 haddock
+	stack exec wavetoy2
+
+clean:
+	rm -f report.html
+	stack clean
