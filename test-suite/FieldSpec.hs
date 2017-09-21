@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_GHC -fno-warn-type-defaults #-}
 
 module FieldSpec (spec) where
 
@@ -12,6 +13,8 @@ import Field
 import Manifold
 
 import IEEEUtils
+
+default (Int)
 
 
 

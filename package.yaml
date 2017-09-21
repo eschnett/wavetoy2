@@ -42,7 +42,6 @@ ghc-options:
   - -Wall
   - -Wincomplete-record-updates
   - -Wincomplete-uni-patterns
-  - -Wno-type-defaults
 github: eschnett/wavetoy2
 library:
   dependencies:

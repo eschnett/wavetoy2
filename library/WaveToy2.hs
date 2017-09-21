@@ -25,8 +25,6 @@ import Field
 import Manifold
 import SimpleVectors
 
--- default (Int)
-
 
 
 -- | State vector for the whole simulation

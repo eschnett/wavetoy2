@@ -1,9 +1,13 @@
+{-# OPTIONS_GHC -fno-warn-type-defaults #-}
+
 module CellSpec (spec) where
 
 import Test.Tasty.Hspec
 import Test.Tasty.QuickCheck hiding (scale)
 
 import Cell
+
+default (Int)
 
 
 

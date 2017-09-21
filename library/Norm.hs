@@ -1,6 +1,10 @@
+{-# OPTIONS_GHC -fno-warn-type-defaults #-}
+
 module Norm where
 
 import Test.QuickCheck
+
+default (Int)
 
 
 

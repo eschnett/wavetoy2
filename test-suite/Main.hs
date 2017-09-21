@@ -22,8 +22,6 @@ import qualified NormSpec
 import qualified TriStateSpec
 import qualified WaveToy2Spec
 
--- default (Int)
-
 
 
 main :: IO ()

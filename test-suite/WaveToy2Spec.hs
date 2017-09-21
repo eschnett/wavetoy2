@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-type-defaults #-}
+
 module WaveToy2Spec (spec) where
 
 import Test.Tasty.Hspec
@@ -10,6 +12,8 @@ import SimpleVectors
 import WaveToy2
 
 import IEEEUtils
+
+default (Int)
 
 
 
