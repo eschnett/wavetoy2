@@ -56,8 +56,9 @@ specEnergyCell = do
 
 specRhsCell :: Spec
 specRhsCell = do
-  it "is not all zero" $
-     property $ \t x t' x' dir ->
+  it "is not all zero for a non-zero state" $
+     -- We require t/=0 so that not all (c == 0)
+     property $ \t x t' x' dir -> t /= 0 ==>
          let bx = if dir then 1 else -1
              c = initCell (t, x) :: Cell Double
              cx = initCell (t', x') :: Cell Double
