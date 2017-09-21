@@ -48,14 +48,14 @@ errorCell :: Floating a => (a, a) -> Cell a -> Cell a
 errorCell (t, x) cell = liftA2 (-) cell (initCell (t, x))
 
 energyCell :: Fractional a => Cell a -> a
-energyCell c = 1 / 2 * ((rho c) ^ 2 + (vx c) ^ 2)
+energyCell c = 1 / 2 * (rho c ^ 2 + vx c ^ 2)
 
 -- Dirichlet boundary conditions applied to the RHS
 rhsCell :: (Num b, Ord b, Num a) => b -> Cell a -> Cell a -> Cell a
 rhsCell bx c cx = mix bx
     where rhs = Cell (rho c) (vx cx) (rho cx)
-          bclo = Cell 0 0 (vx cx)
-          bchi = Cell 0 0 (vx cx)
+          bclo = Cell 0 0 (rho cx)
+          bchi = Cell 0 0 (rho cx)
           mix n | n < 0 = bclo
                 | n > 0 = bchi
                 | otherwise = rhs

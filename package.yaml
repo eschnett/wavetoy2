@@ -20,6 +20,8 @@ executables:
   wavetoy2:
     dependencies:
       - base
+      - Chart
+      - Chart-diagrams
       - monad-loops
       - vector-space
       - wavetoy2
