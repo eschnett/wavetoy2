@@ -34,8 +34,8 @@ specPiecewiseLinearField1D = do
          (lo, hi) = bounds m ()
          u = coordinatePiecewiseLinearField1D m np
          proj x = lo + mod' x (hi - lo)
-         xs | isEmpty m = []
-            | isDiscrete m () = [lo]
+         xs | mfempty m = []
+            | mfdiscrete m () = [lo]
             | otherwise = [lo, hi] ++ map proj xs'
          val x | np == 0 = 0
                | np == 1 = lo
@@ -57,7 +57,7 @@ specPiecewiseLinearField1D = do
      let np = abs np'
          (lo, hi) = bounds m ()
          u = coordinatePiecewiseLinearField1D m np
-         val | isDiscrete m () || np == 0 = 0
+         val | mfdiscrete m () || np == 0 = 0
              | np == 1 = lo * (hi - lo)
              | otherwise = 1/2 * (hi^2 - lo^2)
          scale = absmaximum [lo^2, hi^2]
@@ -79,10 +79,10 @@ specPiecewiseLinearField1D = do
          du = extend (derivative ()) u
          h = (hi - lo) / fromIntegral (np - 1)
          proj x = lo + mod' x (hi - lo)
-         xs | isEmpty m = []
-            | isDiscrete m () = [lo]
+         xs | mfempty m = []
+            | mfdiscrete m () = [lo]
             | otherwise = [lo, hi] ++ map proj xs'
-         val | isDiscrete m () || np <= 1 = 0
+         val | mfdiscrete m () || np <= 1 = 0
              | otherwise = 1
          scale = absmaximum [lo, hi, lo / h, hi / h]
      in all (\x -> approxEq scale (evaluate x du) val) xs
@@ -94,11 +94,11 @@ specPiecewiseLinearField1D = do
          bu = extend (boundary ()) u
          h = (hi - lo) / fromIntegral (np - 1)
          proj x = lo + mod' x (hi - lo)
-         xs | isEmpty m = []
-            | isDiscrete m () = [lo]
+         xs | mfempty m = []
+            | mfdiscrete m () = [lo]
             | otherwise = [lo, hi] ++ map proj xs'
          good x val
-             | isDiscrete m () || np <= 1 = val == 0
+             | mfdiscrete m () || np <= 1 = val == 0
              | approxEq scale x lo = approxEq scale val (-2*lo/h)
              | approxEq scale x hi = approxEq scale val (2*hi/h)
              | approxGt scale x (lo+h) && approxLt scale x (hi-h) = val == 0

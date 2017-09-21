@@ -265,7 +265,7 @@ instance Field (PiecewiseLinearField1D c) where
         (FieldOk (PiecewiseLinearField1D c) v,
          RealFrac (Coordinate (GetManifold (PiecewiseLinearField1D c))))
     getManifold (PiecewiseLinearField1D m _ _) = m
-    evaluate p (PiecewiseLinearField1D m _ xs) = assert (isValid m p) val
+    evaluate p (PiecewiseLinearField1D m _ xs) = assert (mfvalid m p) val
         where n = length xs
               (lo, hi) = bounds m ()
               x = fromIntegral (n-1) * (p - lo) / (hi - lo)
@@ -274,7 +274,7 @@ instance Field (PiecewiseLinearField1D c) where
               f0 = 1 - f1
               f1 = realToFrac dx
               val | n==0 = zeroV
-                  | n==1 || isDiscrete m () = xs !! 0
+                  | n==1 || mfdiscrete m () = xs !! 0
                   | otherwise = f0 *^ (xs !! i) ^+^ f1 *^ (xs !! (i+1))
     integral (PiecewiseLinearField1D m _ xs)
         | n == 0 = zeroV
@@ -285,7 +285,7 @@ instance Field (PiecewiseLinearField1D c) where
               ws = [w i | i <- [0..n-1]]
               dV = realToFrac $ volume m / fromIntegral (n-1)
     derivative () (PiecewiseLinearField1D m i xs)
-        | isDiscrete m () || n <= 1 = zeroV
+        | mfdiscrete m () || n <= 1 = zeroV
         | i==0 = dlo
         | i==n-1 = dhi
         | otherwise = dint
@@ -296,7 +296,7 @@ instance Field (PiecewiseLinearField1D c) where
               h = (mhi - mlo) / fromIntegral (n - 1)
               (mlo, mhi) = bounds m ()
     boundary () (PiecewiseLinearField1D m i xs)
-        | isDiscrete m () || n <= 1= zeroV
+        | mfdiscrete m () || n <= 1= zeroV
         | i==0 = blo
         | i==n-1 = bhi
         | otherwise = zeroV
@@ -306,7 +306,7 @@ instance Field (PiecewiseLinearField1D c) where
               h = (mhi - mlo) / fromIntegral (n - 1)
               (mlo, mhi) = bounds m ()
     boundaryNormal () (PiecewiseLinearField1D m i xs)
-        | isDiscrete m () || n <= 1 = 0
+        | mfdiscrete m () || n <= 1 = 0
         | i==0 = blo
         | i==n-1 = bhi
         | otherwise = 0

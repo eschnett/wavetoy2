@@ -27,11 +27,11 @@ class Manifold m where
     type Dimension m :: Type
     type Point m :: Type
     type Coordinate m :: Type
-    isEmpty :: Ok m => m -> Bool
-    isDiscrete :: Ok m => m -> Dimension m -> Bool
+    mfempty :: Ok m => m -> Bool
+    mfdiscrete :: Ok m => m -> Dimension m -> Bool
     volume :: Ok m => m -> Coordinate m
     bounds :: Ok m => m -> Dimension m -> (Coordinate m, Coordinate m)
-    isValid :: Ok m => m -> Point m -> Bool
+    mfvalid :: Ok m => m -> Point m -> Bool
 
 type ManifoldOk m = (() :: Constraint) -- RealFrac (Coordinate m)
 
@@ -49,11 +49,11 @@ instance Manifold (EmptyManifold a) where
     type Dimension (EmptyManifold a) = ()
     type Point (EmptyManifold a) = Void
     type Coordinate (EmptyManifold a) = a -- or Void
-    isEmpty EmptyManifold = True
-    isDiscrete EmptyManifold () = True
+    mfempty EmptyManifold = True
+    mfdiscrete EmptyManifold () = True
     volume EmptyManifold = 0
     bounds EmptyManifold () = (1, 0)
-    isValid EmptyManifold = absurd
+    mfvalid EmptyManifold = absurd
 
 
 
@@ -69,11 +69,11 @@ instance Manifold (UnitManifold a) where
     type Dimension (UnitManifold a) = ()
     type Point (UnitManifold a) = ()
     type Coordinate (UnitManifold a) = a -- or ()
-    isEmpty UnitManifold = False
-    isDiscrete UnitManifold () = True
+    mfempty UnitManifold = False
+    mfdiscrete UnitManifold () = True
     volume UnitManifold = 1
     bounds UnitManifold () = (0, 0)
-    isValid UnitManifold () = True
+    mfvalid UnitManifold () = True
 
 
 
@@ -99,13 +99,13 @@ instance (Manifold m, Manifold n, Coordinate m ~ Coordinate n) =>
     type Dimension (ManifoldProduct m n) = Either (Dimension m) (Dimension n)
     type Point (ManifoldProduct m n) = (Point m, Point n)
     type Coordinate (ManifoldProduct m n) = Coordinate m
-    isEmpty (ManifoldProduct xs ys) = isEmpty xs || isEmpty ys
-    isDiscrete (ManifoldProduct xs _) (Left d) = isDiscrete xs d
-    isDiscrete (ManifoldProduct _ ys) (Right d) = isDiscrete ys d
+    mfempty (ManifoldProduct xs ys) = mfempty xs || mfempty ys
+    mfdiscrete (ManifoldProduct xs _) (Left d) = mfdiscrete xs d
+    mfdiscrete (ManifoldProduct _ ys) (Right d) = mfdiscrete ys d
     volume (ManifoldProduct xs ys) = volume xs * volume ys
     bounds (ManifoldProduct xs _) (Left d) = bounds xs d
     bounds (ManifoldProduct _ ys) (Right d) = bounds ys d
-    isValid (ManifoldProduct xs ys) (p, q) = isValid xs p && isValid ys q
+    mfvalid (ManifoldProduct xs ys) (p, q) = mfvalid xs p && mfvalid ys q
 
 
 
@@ -131,14 +131,14 @@ instance (Manifold m, Manifold n, Coordinate m ~ Coordinate n) =>
     type Dimension (ManifoldSum m n) = Either (Dimension m) (Dimension n)
     type Point (ManifoldSum m n) = Either (Point m) (Point n)
     type Coordinate (ManifoldSum m n) = Coordinate m
-    isEmpty (ManifoldSum xs ys) = isEmpty xs && isEmpty ys
-    isDiscrete (ManifoldSum xs _) (Left d) = isDiscrete xs d
-    isDiscrete (ManifoldSum _ ys) (Right d) = isDiscrete ys d
+    mfempty (ManifoldSum xs ys) = mfempty xs && mfempty ys
+    mfdiscrete (ManifoldSum xs _) (Left d) = mfdiscrete xs d
+    mfdiscrete (ManifoldSum _ ys) (Right d) = mfdiscrete ys d
     volume (ManifoldSum xs ys) = volume xs + volume ys
     bounds (ManifoldSum xs _) (Left d) = bounds xs d
     bounds (ManifoldSum _ ys) (Right d) = bounds ys d
-    isValid (ManifoldSum xs _) (Left p) = isValid xs p
-    isValid (ManifoldSum _ ys) (Right p) = isValid ys p
+    mfvalid (ManifoldSum xs _) (Left p) = mfvalid xs p
+    mfvalid (ManifoldSum _ ys) (Right p) = mfvalid ys p
 
 
 
@@ -155,12 +155,12 @@ instance (Arbitrary a, Num a, Ord a) => Arbitrary (Interval1 a) where
                              (1, return $ Interval1 lo lo),
                              (8, return $ Interval1 lo hi)]
    shrink m@(Interval1 lo hi)
-       | isEmpty m = []
-       --- | isDiscrete m () = [iempty]
+       | mfempty m = []
+       --- | mfdiscrete m () = [iempty]
        --- | (lo, hi) == (0, 1) = [iempty, idiscrete]
        --- | lo == 0 && hi /= 1 = [iempty, idiscrete, inatural]
        --- | otherwise = [iempty, idiscrete, inatural, iextended]
-       | isDiscrete m () = [iempty]
+       | mfdiscrete m () = [iempty]
        | (lo, hi) == (0, 1) = [idiscrete]
        | lo == 0 && hi /= 1 = [inatural]
        | otherwise = [iextended]
@@ -174,8 +174,8 @@ instance Manifold (Interval1 a) where
     type Dimension (Interval1 a) = ()
     type Point (Interval1 a) = a
     type Coordinate (Interval1 a) = a
-    isEmpty (Interval1 lo hi) = lo > hi
-    isDiscrete (Interval1 lo hi) () = lo >= hi
+    mfempty (Interval1 lo hi) = lo > hi
+    mfdiscrete (Interval1 lo hi) () = lo >= hi
     volume (Interval1 lo hi) = max 0 (hi - lo)
     bounds (Interval1 lo hi) () = (lo, hi)
-    isValid (Interval1 lo hi) x = lo <= x && x <= hi
+    mfvalid (Interval1 lo hi) x = lo <= x && x <= hi

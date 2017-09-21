@@ -23,17 +23,17 @@ specInterval1 :: Spec
 specInterval1 = do
   it "has no points when empty" $
      property $ \(xs :: [Double]) ->
-     not $ any (isValid emptyI1) xs
+     not $ any (mfvalid emptyI1) xs
   it "has only points within bounds" $
      property $ \lo hi (xs :: [Double]) ->
      let m = Interval1 lo hi :: Interval1 Double
          inBounds x = lo <= x && x <= hi
-     in all (\x -> isValid m x == inBounds x) xs
+     in all (\x -> mfvalid m x == inBounds x) xs
   -- it "has only points within bounds" $
   --    property $ \(m :: Interval1 Double) (xs :: [Double]) ->
   --    let (lo, hi) = bounds m ()
   --        inBounds x = lo <= x && x <= hi
-  --    in all (\x -> isValid m x == inBounds x) xs
+  --    in all (\x -> mfvalid m x == inBounds x) xs
   it "has the correct bounds" $
      property $ \lo hi ->
      let m = Interval1 lo hi :: Interval1 Double
@@ -54,15 +54,15 @@ specManifoldProduct = do
      let mp0 = ManifoldProduct emptyI1 emptyI1
          mp1 = ManifoldProduct m emptyI1
          mp2 = ManifoldProduct emptyI1 m
-     in not (any (isValid mp0) xs) &&
-        not (any (isValid mp1) xs) &&
-        not (any (isValid mp2) xs)
+     in not (any (mfvalid mp0) xs) &&
+        not (any (mfvalid mp1) xs) &&
+        not (any (mfvalid mp2) xs)
   it "has only points within bounds" $
      property $ \(m1 :: Interval1 Double)
                  (m2 :: Interval1 Double)
                  (xs :: [(Double, Double)]) ->
      let m = ManifoldProduct m1 m2
-     in all (\x -> isValid m x == (isValid m1 (fst x) && isValid m2 (snd x))) xs
+     in all (\x -> mfvalid m x == (mfvalid m1 (fst x) && mfvalid m2 (snd x))) xs
   it "has the correct bounds" $
      property $ \(m1 :: Interval1 Double) (m2 :: Interval1 Double) ->
      let m = ManifoldProduct m1 m2
@@ -82,13 +82,13 @@ specManifoldSum = do
   it "has no points when empty" $
      property $ \(xs :: [Either Double Double]) ->
      let mp = ManifoldSum emptyI1 emptyI1
-     in not (any (isValid mp) xs)
+     in not (any (mfvalid mp) xs)
   it "has only points within bounds" $
      property $ \(m1 :: Interval1 Double)
                  (m2 :: Interval1 Double)
                  (xs :: [Either Double Double]) ->
      let m = ManifoldSum m1 m2
-     in all (\x -> isValid m x == either (isValid m1) (isValid m2) x) xs
+     in all (\x -> mfvalid m x == either (mfvalid m1) (mfvalid m2) x) xs
   it "has the correct bounds" $
      property $ \(m1 :: Interval1 Double) (m2 :: Interval1 Double) ->
      let m = ManifoldSum m1 m2
