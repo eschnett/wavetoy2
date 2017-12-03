@@ -16,8 +16,8 @@ import Test.Tasty.Hspec
 -- import Prelude hiding ((!))
 
 import qualified CellSpec
+import qualified ChartSpec
 import qualified FieldSpec
-import qualified ManifoldSpec
 import qualified NormSpec
 import qualified TriStateSpec
 import qualified WaveToy2Spec
@@ -33,7 +33,7 @@ spec :: Spec
 spec =
     do describe "Norm" NormSpec.spec
        describe "TriState" TriStateSpec.spec
-       describe "Manifold" ManifoldSpec.spec
+       describe "Chart" ChartSpec.spec
        describe "Field" FieldSpec.spec
        describe "Cell" CellSpec.spec
        describe "WaveToy2" WaveToy2Spec.spec

@@ -9,8 +9,8 @@ import Data.VectorSpace
 import Test.Tasty.Hspec
 import Test.Tasty.QuickCheck hiding (scale)
 
+import Chart
 import Field
-import Manifold
 
 import IEEEUtils
 
@@ -34,8 +34,8 @@ specPiecewiseLinearField1D = do
          (lo, hi) = bounds m ()
          u = coordinatePiecewiseLinearField1D m np
          proj x = lo + mod' x (hi - lo)
-         xs | mfempty m = []
-            | mfdiscrete m () = [lo]
+         xs | empty m = []
+            | discrete m () = [lo]
             | otherwise = [lo, hi] ++ map proj xs'
          val x | np == 0 = 0
                | np == 1 = lo
@@ -57,7 +57,7 @@ specPiecewiseLinearField1D = do
      let np = abs np'
          (lo, hi) = bounds m ()
          u = coordinatePiecewiseLinearField1D m np
-         val | mfdiscrete m () || np == 0 = 0
+         val | discrete m () || np == 0 = 0
              | np == 1 = lo * (hi - lo)
              | otherwise = 1/2 * (hi^2 - lo^2)
          scale = absmaximum [lo^2, hi^2]
@@ -79,10 +79,10 @@ specPiecewiseLinearField1D = do
          du = extend (derivative ()) u
          h = (hi - lo) / fromIntegral (np - 1)
          proj x = lo + mod' x (hi - lo)
-         xs | mfempty m = []
-            | mfdiscrete m () = [lo]
+         xs | empty m = []
+            | discrete m () = [lo]
             | otherwise = [lo, hi] ++ map proj xs'
-         val | mfdiscrete m () || np <= 1 = 0
+         val | discrete m () || np <= 1 = 0
              | otherwise = 1
          scale = absmaximum [lo, hi, lo / h, hi / h]
      in all (\x -> approxEq scale (evaluate x du) val) xs
@@ -94,11 +94,11 @@ specPiecewiseLinearField1D = do
          bu = extend (boundary ()) u
          h = (hi - lo) / fromIntegral (np - 1)
          proj x = lo + mod' x (hi - lo)
-         xs | mfempty m = []
-            | mfdiscrete m () = [lo]
+         xs | empty m = []
+            | discrete m () = [lo]
             | otherwise = [lo, hi] ++ map proj xs'
          good x val
-             | mfdiscrete m () || np <= 1 = val == 0
+             | discrete m () || np <= 1 = val == 0
              | approxEq scale x lo = approxEq scale val (-2*lo/h)
              | approxEq scale x hi = approxEq scale val (2*hi/h)
              | approxGt scale x (lo+h) && approxLt scale x (hi-h) = val == 0
@@ -158,11 +158,11 @@ specFieldProduct = do
                  (f2 :: PiecewiseLinearField1D Double Double)
                  (xs' :: [Either Double Double]) ->
                  -- TOOD: Remove this restriction
-                 uncurry (<) (bounds (manifold_ f1) ()) &&
-                 uncurry (<) (bounds (manifold_ f2) ()) ==>
+                 uncurry (<) (bounds (chart_ f1) ()) &&
+                 uncurry (<) (bounds (chart_ f2) ()) ==>
      let f = fieldProduct f1 f2
-         (lo1, hi1) = bounds (manifold_ f1) ()
-         (lo2, hi2) = bounds (manifold_ f2) ()
+         (lo1, hi1) = bounds (chart_ f1) ()
+         (lo2, hi2) = bounds (chart_ f2) ()
          proj (Left x1) = Left $ lo1 + mod' x1 (hi1 - lo1)
          proj (Right x2) = Right $ lo2 + mod' x2 (hi2 - lo2)
          xs = [Left lo1, Left hi1, Right lo2, Right hi2] ++ map proj xs'

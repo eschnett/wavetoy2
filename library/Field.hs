@@ -26,32 +26,32 @@ import Data.Monoid
 import Data.VectorSpace
 import Test.QuickCheck
 
-import Manifold hiding (Ok)
-import qualified Manifold
+import Chart hiding (Ok)
+import qualified Chart
 import SimpleVectors
 import TriState
 
 
 
--- | A field, which is a mapping from a manifold to a vector space
+-- | A field, which is a mapping from a chart to a vector space
 -- Is there a connection to the Env comonad?
 class Field f where
-    type GetManifold f :: Type
+    type GetChart f :: Type
     type Ok f v :: Constraint
     type Ok f v = FieldOk f v
-    getManifold :: Ok f v => f v -> GetManifold f
-    evaluate :: Ok f v => Point (GetManifold f) -> f v -> v
+    getChart :: Ok f v => f v -> GetChart f
+    evaluate :: Ok f v => Point (GetChart f) -> f v -> v
     integral :: Ok f v => f v -> v
-    derivative :: Ok f v => Dimension (GetManifold f) -> f v -> v
-    boundary :: Ok f v => Dimension (GetManifold f) -> f v -> v
+    derivative :: Ok f v => Dimension (GetChart f) -> f v -> v
+    boundary :: Ok f v => Dimension (GetChart f) -> f v -> v
     boundaryNormal ::
-        Ok f v => Dimension (GetManifold f) -> f v -> Coordinate (GetManifold f)
+        Ok f v => Dimension (GetChart f) -> f v -> Coordinate (GetChart f)
 
 type FieldOk f v =
     ( Foldable f
     , Comonad f
-    , Manifold (GetManifold f)
-    , Manifold.Ok (GetManifold f)
+    , Chart (GetChart f)
+    , Chart.Ok (GetChart f)
     , VectorSpace v
     , Fractional (Scalar v)
     )
@@ -59,7 +59,7 @@ type FieldOk f v =
 
 
 -- | The product of two fields, with a domain consisting of two
--- manifolds glued togeter
+-- charts glued togeter
 data FieldProduct f g v = FieldProduct TriState (f v) (g v)
     deriving (Eq, Ord, Read, Show, Foldable, Functor)
 
@@ -92,16 +92,16 @@ instance (Arbitrary (f v), Arbitrary (g v)) =>
         [FieldProduct Neither f' g' | (f', g') <- shrink (f, g)]
 
 instance (Field f, Field g) => Field (FieldProduct f g) where
-    type GetManifold (FieldProduct f g) =
-        ManifoldSum (GetManifold f) (GetManifold g)
+    type GetChart (FieldProduct f g) =
+        ChartSum (GetChart f) (GetChart g)
     type Ok (FieldProduct f g) v =
         ( Ok f v
         , Ok g v
         , FieldOk (FieldProduct f g) v
-        , Coordinate (GetManifold f) ~ Coordinate (GetManifold g)
+        , Coordinate (GetChart f) ~ Coordinate (GetChart g)
         )
-    getManifold (FieldProduct _ f g) =
-        manifoldSum (getManifold f) (getManifold g)
+    getChart (FieldProduct _ f g) =
+        chartSum (getChart f) (getChart g)
     evaluate (Left p) (FieldProduct _ xs _) = evaluate p xs
     evaluate (Right p) (FieldProduct _ _ ys) = evaluate p ys
     integral (FieldProduct _ xs ys) = integral xs ^+^ integral ys
@@ -118,7 +118,7 @@ instance (Field f, Field g) => Field (FieldProduct f g) where
 
 
 -- | The composition of two fields, with a domain consisting of the
--- Cartesian product of two manifolds
+-- Cartesian product of two charts
 -- Note: This is a monadic composition, except that we wrap it in a
 -- new type.
 newtype FieldCompose f g v = FieldCompose (f (g v))
@@ -149,18 +149,18 @@ instance Arbitrary (f (g v)) => Arbitrary (FieldCompose f g v) where
     shrink (FieldCompose f) = [FieldCompose f' | f' <- shrink f]
 
 instance (Field f, Field g) => Field (FieldCompose f g) where
-    type GetManifold (FieldCompose f g) =
-        ManifoldProduct (GetManifold f) (GetManifold g)
+    type GetChart (FieldCompose f g) =
+        ChartProduct (GetChart f) (GetChart g)
     type Ok (FieldCompose f g) v =
         ( Ok g v
         , Ok f (g v)
         , FieldOk g v
         , FieldOk f (g v)
         , FieldOk (FieldCompose f g) v
-        , Coordinate (GetManifold f) ~ Coordinate (GetManifold g)
+        , Coordinate (GetChart f) ~ Coordinate (GetChart g)
         )
-    getManifold (FieldCompose f) =
-        manifoldProduct (getManifold f) (getManifold (extract f))
+    getChart (FieldCompose f) =
+        chartProduct (getChart f) (getChart (extract f))
     evaluate (p, q) (FieldCompose x) = evaluate q (evaluate p x)
     integral (FieldCompose x) = integral (integral x)
     derivative (Left d) (FieldCompose x) = extract (derivative d x)
@@ -172,9 +172,9 @@ instance (Field f, Field g) => Field (FieldCompose f g) where
 
 
 
--- | A simple field, living on a 1D manifold
+-- | A simple field, living on a 1D chart
 data PiecewiseLinearField1D c v =
-    PiecewiseLinearField1D { manifold_ :: Interval1 c
+    PiecewiseLinearField1D { chart_ :: Interval1 c
                            , position_ :: Int
                            , values :: [v]
                            }
@@ -182,7 +182,7 @@ data PiecewiseLinearField1D c v =
 
 -- Constraints:
 -- [Comonad]: not (null values)
--- empty manifold: absurd
+-- empty chart: absurd
 
 generatePiecewiseLinearField1D ::
     Interval1 c -> [v] -> PiecewiseLinearField1D c v
@@ -260,12 +260,12 @@ instance (Arbitrary c, Num c, Ord c, Arbitrary v) =>
         [PiecewiseLinearField1D m' 0 xs' | (m', xs') <- shrink (m, xs)]
 
 instance Field (PiecewiseLinearField1D c) where
-    type GetManifold (PiecewiseLinearField1D c) = Interval1 c
+    type GetChart (PiecewiseLinearField1D c) = Interval1 c
     type Ok (PiecewiseLinearField1D c) v =
         (FieldOk (PiecewiseLinearField1D c) v,
-         RealFrac (Coordinate (GetManifold (PiecewiseLinearField1D c))))
-    getManifold (PiecewiseLinearField1D m _ _) = m
-    evaluate p (PiecewiseLinearField1D m _ xs) = assert (mfvalid m p) val
+         RealFrac (Coordinate (GetChart (PiecewiseLinearField1D c))))
+    getChart (PiecewiseLinearField1D m _ _) = m
+    evaluate p (PiecewiseLinearField1D m _ xs) = assert (valid m p) val
         where n = length xs
               (lo, hi) = bounds m ()
               x = fromIntegral (n-1) * (p - lo) / (hi - lo)
@@ -274,7 +274,7 @@ instance Field (PiecewiseLinearField1D c) where
               f0 = 1 - f1
               f1 = realToFrac dx
               val | n==0 = zeroV
-                  | n==1 || mfdiscrete m () = xs !! 0
+                  | n==1 || discrete m () = xs !! 0
                   | otherwise = f0 *^ (xs !! i) ^+^ f1 *^ (xs !! (i+1))
     integral (PiecewiseLinearField1D m _ xs)
         | n == 0 = zeroV
@@ -285,7 +285,7 @@ instance Field (PiecewiseLinearField1D c) where
               ws = [w i | i <- [0..n-1]]
               dV = realToFrac $ volume m / fromIntegral (n-1)
     derivative () (PiecewiseLinearField1D m i xs)
-        | mfdiscrete m () || n <= 1 = zeroV
+        | discrete m () || n <= 1 = zeroV
         | i==0 = dlo
         | i==n-1 = dhi
         | otherwise = dint
@@ -296,7 +296,7 @@ instance Field (PiecewiseLinearField1D c) where
               h = (mhi - mlo) / fromIntegral (n - 1)
               (mlo, mhi) = bounds m ()
     boundary () (PiecewiseLinearField1D m i xs)
-        | mfdiscrete m () || n <= 1= zeroV
+        | discrete m () || n <= 1= zeroV
         | i==0 = blo
         | i==n-1 = bhi
         | otherwise = zeroV
@@ -306,7 +306,7 @@ instance Field (PiecewiseLinearField1D c) where
               h = (mhi - mlo) / fromIntegral (n - 1)
               (mlo, mhi) = bounds m ()
     boundaryNormal () (PiecewiseLinearField1D m i xs)
-        | mfdiscrete m () || n <= 1 = 0
+        | discrete m () || n <= 1 = 0
         | i==0 = blo
         | i==n-1 = bhi
         | otherwise = 0

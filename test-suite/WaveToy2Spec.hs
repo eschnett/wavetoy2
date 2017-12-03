@@ -6,8 +6,8 @@ import Test.Tasty.Hspec
 import Test.Tasty.QuickCheck hiding (scale)
 
 import Cell
+import Chart
 import Field
-import Manifold
 import SimpleVectors
 import WaveToy2
 
@@ -36,7 +36,7 @@ specSkeletonState = do
   it "has the right extent" $
      property $ \xmin xmax np -> np > 3 && xmax > xmin ==>
      let skel = skeletonState (xmin, xmax) np :: State Double (V0 Double)
-     in bounds (getManifold (cells skel)) () == (xmin, xmax)
+     in bounds (getChart (cells skel)) () == (xmin, xmax)
   it "has the right size" $
      property $ \xmin xmax np -> np > 3 && xmax > xmin ==>
      let skel = skeletonState (xmin, xmax) np :: State Double (V0 Double)

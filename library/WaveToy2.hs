@@ -21,8 +21,8 @@ import Control.Comonad
 import Data.VectorSpace
 
 import Cell
+import Chart
 import Field
-import Manifold
 import SimpleVectors
 
 
@@ -64,7 +64,7 @@ skeletonState (lo, hi) np =
 
 coordState :: RealFrac a => State a b -> State a a
 coordState g = g {cells = newcells}
-    where newcells = coordinatePiecewiseLinearField1D (manifold_ (cells g)) np
+    where newcells = coordinatePiecewiseLinearField1D (chart_ (cells g)) np
           np = length (values (cells g))
 
 initState :: RealFloat a => a -> State a b -> State a (Cell a)

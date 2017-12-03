@@ -52,7 +52,7 @@ library:
     # - ghc-typelits-knownnat
     - ieee754
     - linear
-    # - profunctors
+    - profunctors
     - QuickCheck
     - vector
     - vector-space
