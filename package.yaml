@@ -15,7 +15,7 @@ benchmarks:
     main: Main.hs
     source-dirs: benchmark
 category: Other
-description: wavetoy2 is a Haskell WaveToy implementation
+description: wavetoy2 is a Haskell WaveToy implementation.
 executables:
   wavetoy2:
     dependencies:
