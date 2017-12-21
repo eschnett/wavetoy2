@@ -9,22 +9,24 @@ sudo: false
 # Do not choose a language; we provide our own build tools.
 language: generic
 
-# Caching so the next build will be fast too.
-cache:
-  directories:
-    - $HOME/.stack
-
 # Ensure necessary system libraries are present
 addons:
   apt:
     packages:
       - libgmp-dev
 
+# Caching so the next build will be faster
+cache:
+  directories:
+    - $HOME/.stack
+
 before_install:
   # Download and unpack the stack executable
-  - mkdir -p ~/.local/bin
-  - export PATH=$HOME/.local/bin:$PATH
-  - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+  - mkdir -p "$HOME/.local/bin"
+  - export "PATH=$HOME/.local/bin:$PATH"
+  - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C "$HOME/.local/bin" '*/stack'
+  # - stack install stack-hpc-coveralls
+  - travis_retry curl -L https://github.com/rubik/stack-hpc-coveralls/releases/download/v0.0.4.0/shc-linux-x64-8.0.1.tar.bz2 | tar xj -C "$HOME/.local/bin"
 
 install:
   # Build dependencies
@@ -36,6 +38,4 @@ script:
 
 after_script:
   # Collect and submit coverage information
-  # - stack install stack-hpc-coveralls
-  - travis_retry curl -L https://github.com/rubik/stack-hpc-coveralls/releases/download/v0.0.4.0/shc-linux-x64-8.0.1.tar.bz2 | tar -xj
-  - ./shc wavetoy2 wavetoy2-test-suite
+  - shc wavetoy2 wavetoy2-test-suite
